@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib "./lib";
-use WebService::Hatena::Bookmark;
+use WebService::Hatena::Bookmark::Lite;
 
 use Data::Dumper;
 
@@ -14,7 +14,7 @@ my $url  = 'http://www.google.co.jp';
 my @tag  = ('hoge','moge');
 my $com  = 'tetetetetst';
 
-my $bookmark = WebService::Hatena::Bookmark->new(
+my $bookmark = WebService::Hatena::Bookmark::Lite->new(
     username => $user,
     password => $pass,
 );

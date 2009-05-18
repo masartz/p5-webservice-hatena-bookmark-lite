@@ -1,4 +1,4 @@
-package WebService::Hatena::Bookmark;
+package WebService::Hatena::Bookmark::Lite;
 
 use strict;
 use warnings;
@@ -98,13 +98,13 @@ __END__
 
 =head1 NAME
 
-WebService::Hatena::Bookmark - A Perl Interface for Hatena::Bookmark AtomPub API
+WebService::Hatena::Bookmark::Lite - A Perl Interface for Hatena::Bookmark AtomPub API
 
 =head1 SYNOPSIS
 
-    use WebService::Hatena::Bookmark;
+    use WebService::Hatena::Bookmark::Lite;
 
-    my $bookmark = WebService::Hatena::Bookmark->new({
+    my $bookmark = WebService::Hatena::Bookmark::Lite->new({
         username => $username,
         password  => $password,
     });
@@ -135,7 +135,7 @@ WebService::Hatena::Bookmark - A Perl Interface for Hatena::Bookmark AtomPub API
 
 =head1 DESCRIPTION
 
-WebService::Hatena::Bookmark is
+WebService::Hatena::Bookmark::Lite is
 
 =head1 AUTHOR
 

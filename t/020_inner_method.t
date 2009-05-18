@@ -5,14 +5,14 @@ use warnings;
     
 use Test::More tests=>10;
 
-use WebService::Hatena::Bookmark;
+use WebService::Hatena::Bookmark::Lite;
 
 my $URL = 'http://www.example.com';
 
 
 #  _set_client
 {
-    my $bookmark = WebService::Hatena::Bookmark->new(
+    my $bookmark = WebService::Hatena::Bookmark::Lite->new(
         username => 'samplename',
         password => 'samplepass'
     );
@@ -25,7 +25,7 @@ my $URL = 'http://www.example.com';
 }
 #  _make_link_element
 {
-    my $link = WebService::Hatena::Bookmark->_make_link_element( $URL );
+    my $link = WebService::Hatena::Bookmark::Lite->_make_link_element( $URL );
     isa_ok( $link , 'XML::Atom::Link' , 'XML::Atom::Link object OK');
 
     is( $link->rel() , 'related' , 'link_rel OK');
@@ -35,8 +35,8 @@ my $URL = 'http://www.example.com';
 
 # _make_tag
 {
-    is(WebService::Hatena::Bookmark->_make_tag() ,  '' , 'empty _make_tag OK');
-    is(WebService::Hatena::Bookmark->_make_tag(['aaa']) ,  '[aaa]' , '1 ary _make_tag OK');
-    is(WebService::Hatena::Bookmark->_make_tag(['bbb','ccc']) ,  '[bbb][ccc]' , 'multi ary _make_tag OK');
+    is(WebService::Hatena::Bookmark::Lite->_make_tag() ,  '' , 'empty _make_tag OK');
+    is(WebService::Hatena::Bookmark::Lite->_make_tag(['aaa']) ,  '[aaa]' , '1 ary _make_tag OK');
+    is(WebService::Hatena::Bookmark::Lite->_make_tag(['bbb','ccc']) ,  '[bbb][ccc]' , 'multi ary _make_tag OK');
 }
 

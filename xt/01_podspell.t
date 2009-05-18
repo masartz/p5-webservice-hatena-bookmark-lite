@@ -7,4 +7,4 @@ all_pod_files_spelling_ok('lib');
 __DATA__
 Masartz
 masartz {at} gmail.com
-WebService::Hatena::Bookmark
+WebService::Hatena::Bookmark::Lite
