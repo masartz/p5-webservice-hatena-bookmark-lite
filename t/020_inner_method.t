@@ -10,14 +10,14 @@ use WebService::Hatena::Bookmark::Lite;
 my $URL = 'http://www.example.com';
 
 
-#  _set_client
+#  new
 {
     my $bookmark = WebService::Hatena::Bookmark::Lite->new(
         username => 'samplename',
         password => 'samplepass'
     );
 
-    my $client = $bookmark->_set_client();
+    my $client = $bookmark->client();
     isa_ok( $client , 'XML::Atom::Client' , 'XML::Atom::Client object OK');
 
     is( $client->username() , 'samplename' , 'XML::Atom::Client username OK');

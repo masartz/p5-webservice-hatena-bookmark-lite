@@ -10,23 +10,28 @@ use XML::Atom::Entry;
 use XML::Atom::Client;
 use base qw/ Class::Accessor::Fast /;
 
+use Data::Dumper;
+
 __PACKAGE__->mk_accessors qw/
-    username
-    password
+    client
 /;
 
-my $HatenaURI = q{http://b.hatena.ne.jp};
-my $PostURI = qq{$HatenaURI/atom/post};
-my $FeedURI = qq{$HatenaURI/atom/feed};
+my $HatenaURI      = q{http://b.hatena.ne.jp};
+my $PostURI        = qq{$HatenaURI/atom/post};
+my $EditURI_PREFIX = qq{$HatenaURI/atom/edit/};
+my $FeedURI        = qq{$HatenaURI/atom/feed};
 
 sub new{
-    my $self = shift;
+    my $class = shift;
     my %arg  = @_;
 
+    my $client = XML::Atom::Client->new;
+    $client->username($arg{username});
+    $client->password($arg{password});
+
     bless {
-        username => $arg{username},
-        password => $arg{password},
-    },$self;
+        client   => $client
+    },$class;
 }
 
 sub add{
@@ -37,36 +42,66 @@ sub add{
     my $tag      = $arg{tag};
     my $comment  = $arg{comment};
 
-    my $client = $self->_set_client();
-
     my $entry = XML::Atom::Entry->new;
     $entry->add_link( $self->_make_link_element($url) );
 
-    my $summary = $self->_make_tag($tag) if scalar $tag ;
+    my $summary = $self->_make_tag($tag);
     $summary .= $comment;
     $entry->summary($summary);
 
-    return $client->createEntry($PostURI , $entry) 
-        or croak $client->errstr;
+    return $self->client->createEntry($PostURI , $entry)
+        or croak $self->client->errstr;
+}
+
+sub getEntry{
+    my $self = shift;
+    my %arg  = @_;
+
+    my $eid  = $arg{eid};
+
+    my $EditURI = qq{$EditURI_PREFIX$eid};
+
+    return $self->client->getEntry( $EditURI )
+        or croak $self->client->errstr;
+}
+
+sub edit{
+    my $self = shift;
+    my %arg  = @_;
+
+    my $eid      = $arg{eid};
+    my $tag      = $arg{tag};
+    my $comment  = $arg{comment};
+
+    my $EditURI = qq{$EditURI_PREFIX$eid};
+
+    my $entry = XML::Atom::Entry->new;
+
+    my $summary = $self->_make_tag($tag);
+    $summary .= $comment;
+    $entry->summary($summary);
+
+    return $self->client->updateEntry($EditURI , $entry)
+        or croak $self->client->errstr;
+}
+
+sub delete{
+    my $self = shift;
+    my %arg  = @_;
+
+    my $eid  = $arg{eid};
+
+    my $EditURI = qq{$EditURI_PREFIX$eid};
+
+    return $self->client->deleteEntry($EditURI )
+        or croak $self->client->errstr;
 }
 
 sub getFeed{
     my $self = shift;
 
-    my $client = $self->_set_client();
-
-    return $client->getFeed( $FeedURI )
-        or croak $client->errstr;
-}
-
-sub _set_client{
-    my $self = shift;
-    
-    my $client = XML::Atom::Client->new;
-    $client->username($self->username);
-    $client->password($self->password);
-
-    return $client;
+    return $self->client->getFeed( $FeedURI )
+        or croak $self->client->errstr;
 }
 
 sub _make_link_element{
@@ -82,7 +117,7 @@ sub _make_link_element{
 }
 
 sub _make_tag{
-    my $self = shift;
+    my $self     = shift;
     my $tag_list = shift;
 
     my $tag_str = '';
@@ -91,6 +126,26 @@ sub _make_tag{
     }
 
     return $tag_str;
+}
+
+sub _entry2eid{
+    my $self  = shift;
+    my $entry = shift;
+
+    my $edit = '';
+    for my $link ( $entry->link() ){
+        if( $link->rel() eq 'service.edit'){
+            $edit = $link->href();
+            last;
+        }
+        else{
+            next;
+        }
+    }
+
+    my $eid = substr($edit , length("$EditURI_PREFIX") );
+
+    return $eid;
 }
 
 1;
@@ -118,14 +173,14 @@ WebService::Hatena::Bookmark::Lite - A Perl Interface for Hatena::Bookmark AtomP
 
     # Edit
     $bookmark->edit({
-        url     => $url,
+        eid     => 12345,
         tag     => \@tag_list,
         comment => $comment,
     });
     
     # Delete
     $bookmark->delete({
-        url     => $url,
+        eid     => 567,
     });
 
     # Get Feed
