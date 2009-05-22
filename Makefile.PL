@@ -1,6 +1,6 @@
 use inc::Module::Install;
-name 'WebService-Hatena-Bookmark';
-all_from 'lib/WebService/Hatena/Bookmark.pm';
+name 'WebService-Hatena-Bookmark-Lite';
+all_from 'lib/WebService/Hatena/Bookmark/Lite.pm';
 
 # requires '';
 

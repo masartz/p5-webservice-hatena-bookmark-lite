@@ -8,9 +8,8 @@ use Carp qw/croak/;
 use XML::Atom::Link;
 use XML::Atom::Entry;
 use XML::Atom::Client;
-use base qw/ Class::Accessor::Fast /;
 
-use Data::Dumper;
+use base qw/ Class::Accessor::Fast /;
 
 __PACKAGE__->mk_accessors qw/
     client
@@ -22,8 +21,7 @@ my $EditURI_PREFIX = qq{$HatenaURI/atom/edit/};
 my $FeedURI        = qq{$HatenaURI/atom/feed};
 
 sub new{
-    my $class = shift;
-    my %arg  = @_;
+    my( $class , %arg ) = @_;
 
     my $client = XML::Atom::Client->new;
     $client->username($arg{username});
@@ -35,8 +33,7 @@ sub new{
 }
 
 sub add{
-    my $self = shift;
-    my %arg  = @_;
+    my( $self , %arg ) = @_;
 
     my $url      = $arg{url};
     my $tag      = $arg{tag};
@@ -45,53 +42,41 @@ sub add{
     my $entry = XML::Atom::Entry->new;
     $entry->add_link( $self->_make_link_element($url) );
 
-    my $summary = $self->_make_tag($tag);
-    $summary .= $comment;
-    $entry->summary($summary);
+    $entry->summary( $self->_make_summary($tag,$comment) );
 
     return $self->client->createEntry($PostURI , $entry)
         or croak $self->client->errstr;
 }
 
 sub getEntry{
-    my $self = shift;
-    my %arg  = @_;
+    my( $self , %arg ) = @_;
 
-    my $eid  = $arg{eid};
-
-    my $EditURI = qq{$EditURI_PREFIX$eid};
+    my $EditURI = $self->_set_edit_uri( $arg{eid} );
 
     return $self->client->getEntry( $EditURI )
         or croak $self->client->errstr;
 }
 
 sub edit{
-    my $self = shift;
-    my %arg  = @_;
+    my( $self , %arg ) = @_;
 
-    my $eid      = $arg{eid};
     my $tag      = $arg{tag};
     my $comment  = $arg{comment};
 
-    my $EditURI = qq{$EditURI_PREFIX$eid};
+    my $EditURI = $self->_set_edit_uri( $arg{eid} );
 
     my $entry = XML::Atom::Entry->new;
 
-    my $summary = $self->_make_tag($tag);
-    $summary .= $comment;
-    $entry->summary($summary);
+    $entry->summary( $self->_make_summary($tag,$comment) );
 
     return $self->client->updateEntry($EditURI , $entry)
         or croak $self->client->errstr;
 }
 
 sub delete{
-    my $self = shift;
-    my %arg  = @_;
+    my( $self , %arg ) = @_;
 
-    my $eid  = $arg{eid};
-
-    my $EditURI = qq{$EditURI_PREFIX$eid};
+    my $EditURI = $self->_set_edit_uri( $arg{eid} );
 
     return $self->client->deleteEntry($EditURI )
         or croak $self->client->errstr;
@@ -104,33 +89,8 @@ sub getFeed{
         or croak $self->client->errstr;
 }
 
-sub _make_link_element{
-    my $self = shift;
-    my $url  = shift;
-    my $link = XML::Atom::Link->new;
-
-    $link->rel('related');
-    $link->type('text/html');
-    $link->href($url);
-
-    return $link;
-}
-
-sub _make_tag{
-    my $self     = shift;
-    my $tag_list = shift;
-
-    my $tag_str = '';
-    for my $tag ( @{$tag_list} ){
-        $tag_str .= sprintf("[%s]" , $tag);
-    }
-
-    return $tag_str;
-}
-
-sub _entry2eid{
-    my $self  = shift;
-    my $entry = shift;
+sub entry2eid{
+    my( $self , $entry ) = @_;
 
     my $edit = '';
     for my $link ( $entry->link() ){
@@ -148,6 +108,49 @@ sub _entry2eid{
     return $eid;
 }
 
+
+
+sub _set_edit_uri{
+    my( $self , $eid ) = @_;
+
+    return undef if ! $eid;
+
+    return sprintf("%s%s", $EditURI_PREFIX , $eid);
+}
+
+sub _make_link_element{
+    my( $self , $url ) = @_;
+
+    my $link = XML::Atom::Link->new;
+
+    $link->rel('related');
+    $link->type('text/html');
+    $link->href($url);
+
+    return $link;
+}
+
+sub _make_tag{
+    my( $self , $tag_list ) = @_;
+
+    my $tag_str = '';
+    for my $tag ( @{$tag_list} ){
+        $tag_str .= sprintf("[%s]" , $tag);
+    }
+
+    return $tag_str;
+}
+
+sub _make_summary{
+    my ( $self , $tag , $comment ) = @_;
+
+    my $summary = $self->_make_tag($tag);
+    $summary .= $comment || '';
+
+    return $summary;
+}
+
+
 1;
 __END__
 
@@ -160,43 +163,154 @@ WebService::Hatena::Bookmark::Lite - A Perl Interface for Hatena::Bookmark AtomP
     use WebService::Hatena::Bookmark::Lite;
 
     my $bookmark = WebService::Hatena::Bookmark::Lite->new({
-        username => $username,
+        username  => $username,
         password  => $password,
     });
 
-    # Add
-    $bookmark->add({
+    ### add
+    my $entry = $bookmark->add({
         url     => $url,
         tag     => \@tag_list,
         comment => $comment,
     });
 
-    # Edit
+    ### edit
+    @tag = ( qw/ kaka tete /);
+    $com = 'edit comment';
+
+    my $eid = $bookmark->entry2eid($entry);
     $bookmark->edit({
-        eid     => 12345,
-        tag     => \@tag_list,
-        comment => $comment,
-    });
-    
-    # Delete
-    $bookmark->delete({
-        eid     => 567,
-    });
+        eid      => $eid,
+        tag      => \@tag ,
+        comment  => $com  ,
+    );
+
+    ### delete
+    $bookmark->delete(
+        eid      => $eid ,
+    );
 
     # Get Feed
-    $bookmark->getFeed();
+    my $feed = $bookmark->getFeed();
+    print $feed->as_xml;
 
 
 
 =head1 DESCRIPTION
 
-WebService::Hatena::Bookmark::Lite is
+WebService::Hatena::Bookmark::Lite provides an interface to the Hatena::Bookmark AtomAPI.
+
+=head1 METHODS
+
+=head2 new
+
+=over 4
+
+  my $bookmark = WebService::Hatena::Bookmark::Lite->new({
+      username  => $username,
+      password  => $password,
+  });
+
+Creates and returns a WebService::Hatena::Bookmark::Lite Object.
+
+=back
+
+=head2 add
+
+=over 4
+
+  my $entry = $bookmark->add({
+      url     => $url,
+      tag     => \@tag_list,
+      comment => $comment,
+  });
+
+Add Entry of your Hatena::Bookmark.
+Return XML::Atom::Entry Object.
+
+=back
+
+=head2 edit
+
+=over 4
+
+  my $entry = $bookmark->edit({
+      eid     => $eid,
+      tag     => \@tag_list,
+      comment => $comment,
+  });
+
+Edit exist entry of your Hatena::Bookmark.
+Return XML::Atom::Entry Object.
+
+=back
+
+=head2 delete
+
+=over 4
+
+  $bookmark->delete(
+      eid      => $eid ,
+  );
+
+Delete exist entry of your Hatena::Bookmark.
+
+=back
+
+=head2 entry2eid
+
+=over 4
+
+  my $eid = $bookmark->entry2eid( $entry );
+
+Return eid of correct entry.
+eid is unique number of each entry.
+
+=back
+
+=head2 getEntry
+
+=over 4
+
+  my $entry = $bookmark->getEntry(
+      eid  => $eid ,
+  );
+
+Get exist entry of your Hatena::Bookmark.
+Return XML::Atom::Entry Object.
+
+=back
+
+=head2 getFeed
+
+=over 4
+
+  my $feed = $bookmark->getFeed();
+
+  print $feed->as_xml;
+
+Get entries of your Hatena::Bookmark.
+Return XML::Atom::Feed Object.
+
+=back
 
 =head1 AUTHOR
 
 Masartz E<lt>masartz {at} gmail.comE<gt>
 
 =head1 SEE ALSO
+
+=over 4
+
+=item * Hatena::Bookmark
+
+http://d.hatena.ne.jp/
+
+=item * Hatena::Bookmark API documentation
+
+http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%C3%A5%AF%A5%DE%A1%BC%A5%AFAtomAPI
+
+=item * L<XML::Atom>
 
 =head1 LICENSE
 

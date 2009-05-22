@@ -20,23 +20,35 @@ my $bookmark = WebService::Hatena::Bookmark::Lite->new(
     password => $pass,
 );
 
-$bookmark->add(
+### Add
+my $entry1 = $bookmark->add(
     url      => $url1 ,
     tag      => \@tag ,
     comment  => $com  ,
 );
 
-$bookmark->add(
+my $entry2 = $bookmark->add(
     url      => $url2 ,
     tag      => \@tag ,
     comment  => $com  ,
 );
 
+
+### edit
 @tag = ( qw/ kaka tete /);
 $com = 'edit comment';
 
+my $eid1 = $bookmark->entry2eid($entry1);
+$bookmark->edit({
+    eid      => $eid,
+    tag      => \@tag ,
+    comment  => $com  ,
+);
+
+### delete
+my $eid2 = $bookmark->entry2eid($entry2);
 $bookmark->delete(
-    eid      => 12345 ,
+    eid      => $eid2 ,
 );
 
 my $feed = $bookmark->getFeed();

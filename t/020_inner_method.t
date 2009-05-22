@@ -3,11 +3,14 @@
 use strict;
 use warnings;
     
-use Test::More tests=>10;
+use Test::More tests=>15;
 
 use WebService::Hatena::Bookmark::Lite;
 
 my $URL = 'http://www.example.com';
+my $EditURI_PREFIX = q{http://b.hatena.ne.jp/atom/edit/};
+
+my $package = 'WebService::Hatena::Bookmark::Lite';
 
 
 #  new
@@ -23,9 +26,17 @@ my $URL = 'http://www.example.com';
     is( $client->username() , 'samplename' , 'XML::Atom::Client username OK');
     is( $client->password() , 'samplepass' , 'XML::Atom::Client password OK');
 }
+
+
+# _set_edit_uri
+{
+    is( $package->_set_edit_uri() ,  undef , 'empty eid _set_edit_uri OK');
+    is( $package->_set_edit_uri(123) ,  $EditURI_PREFIX.'123' , 'normal _set_edit_uri OK');
+}
+
 #  _make_link_element
 {
-    my $link = WebService::Hatena::Bookmark::Lite->_make_link_element( $URL );
+    my $link = $package->_make_link_element( $URL );
     isa_ok( $link , 'XML::Atom::Link' , 'XML::Atom::Link object OK');
 
     is( $link->rel() , 'related' , 'link_rel OK');
@@ -35,8 +46,14 @@ my $URL = 'http://www.example.com';
 
 # _make_tag
 {
-    is(WebService::Hatena::Bookmark::Lite->_make_tag() ,  '' , 'empty _make_tag OK');
-    is(WebService::Hatena::Bookmark::Lite->_make_tag(['aaa']) ,  '[aaa]' , '1 ary _make_tag OK');
-    is(WebService::Hatena::Bookmark::Lite->_make_tag(['bbb','ccc']) ,  '[bbb][ccc]' , 'multi ary _make_tag OK');
+    is( $package->_make_tag() ,  '' , 'empty _make_tag OK');
+    is( $package->_make_tag(['aaa']) ,  '[aaa]' , '1 ary _make_tag OK');
+    is( $package->_make_tag(['bbb','ccc']) ,  '[bbb][ccc]' , 'multi ary _make_tag OK');
 }
 
+# _make_summary
+{
+    is( $package->_make_summary()                      , ''                , 'empty _make_summary OK');
+    is( $package->_make_summary(['aaa'],'test')        , '[aaa]test'       , '1 ary _make_summary OK');
+    is( $package->_make_summary(['bbb','ccc'],'test2') , '[bbb][ccc]test2' , 'multi ary _make_summary OK');
+}

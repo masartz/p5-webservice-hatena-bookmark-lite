@@ -1,11 +1,11 @@
-This is Perl module WebService::Hatena::Bookmark.
+This is Perl module WebService::Hatena::Bookmark::Lite.
 
 INSTALLATION
 
-WebService::Hatena::Bookmark installation is straightforward. If your CPAN shell is set up,
+WebService::Hatena::Bookmark::Lite installation is straightforward. If your CPAN shell is set up,
 you should just be able to do
 
-    % cpan WebService::Hatena::Bookmark
+    % cpan WebService::Hatena::Bookmark::Lite
 
 Download it, unpack it, then build it as per the usual:
 
@@ -18,9 +18,9 @@ Then install it:
 
 DOCUMENTATION
 
-WebService::Hatena::Bookmark documentation is available as in POD. So you can do:
+WebService::Hatena::Bookmark::Lite documentation is available as in POD. So you can do:
 
-    % perldoc WebService::Hatena::Bookmark
+    % perldoc WebService::Hatena::Bookmark::Lite
 
 to read the documentation online with your favorite pager.
 
