@@ -6,8 +6,6 @@ use warnings;
 use lib "./lib";
 use WebService::Hatena::Bookmark::Lite;
 
-use Data::Dumper;
-
 my $user  = shift;
 my $pass  = shift;
 my $url1  = 'http://www.google.co.jp';
@@ -15,19 +13,24 @@ my $url2  = 'http://www.yahoo.co.jp';
 my @tag   = ( qw/ hoge moge /);
 my $com   = 'tetetetetst';
 
+if( ! $user || ! $pass ){
+    print "please set argment. UserID and Password of Hatena \n";
+    exit;
+}
+
 my $bookmark = WebService::Hatena::Bookmark::Lite->new(
     username => $user,
     password => $pass,
 );
 
 ### Add
-my $entry1 = $bookmark->add(
+my $edit_ep1 = $bookmark->add(
     url      => $url1 ,
     tag      => \@tag ,
     comment  => $com  ,
 );
 
-my $entry2 = $bookmark->add(
+my $edit_ep2 = $bookmark->add(
     url      => $url2 ,
     tag      => \@tag ,
     comment  => $com  ,
@@ -38,17 +41,21 @@ my $entry2 = $bookmark->add(
 @tag = ( qw/ kaka tete /);
 $com = 'edit comment';
 
-my $eid1 = $bookmark->entry2eid($entry1);
-$bookmark->edit({
-    eid      => $eid,
+$bookmark->edit(
+    edit_ep  => $edit_ep1,
     tag      => \@tag ,
     comment  => $com  ,
 );
 
+my $entry = $bookmark->getEntry( edit_ep  => $edit_ep1 );
+my $select_ep = $bookmark->entry2edit_ep( $entry );
+print __LINE__. $select_ep . "\n";
+print __LINE__. $edit_ep1 . "\n";
+
+
 ### delete
-my $eid2 = $bookmark->entry2eid($entry2);
 $bookmark->delete(
-    eid      => $eid2 ,
+    edit_ep  => $edit_ep2,
 );
 
 my $feed = $bookmark->getFeed();

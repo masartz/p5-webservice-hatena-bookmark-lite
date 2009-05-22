@@ -15,10 +15,9 @@ __PACKAGE__->mk_accessors qw/
     client
 /;
 
-my $HatenaURI      = q{http://b.hatena.ne.jp};
-my $PostURI        = qq{$HatenaURI/atom/post};
-my $EditURI_PREFIX = qq{$HatenaURI/atom/edit/};
-my $FeedURI        = qq{$HatenaURI/atom/feed};
+my $HatenaURI      = q{http://b.hatena.ne.jp/};
+my $PostURI        = $HatenaURI.q{atom/post};
+my $FeedURI        = $HatenaURI.q{atom/feed};
 
 sub new{
     my( $class , %arg ) = @_;
@@ -51,7 +50,7 @@ sub add{
 sub getEntry{
     my( $self , %arg ) = @_;
 
-    my $EditURI = $self->_set_edit_uri( $arg{eid} );
+    my $EditURI = $self->_set_edit_uri( $arg{edit_ep} );
 
     return $self->client->getEntry( $EditURI )
         or croak $self->client->errstr;
@@ -63,7 +62,7 @@ sub edit{
     my $tag      = $arg{tag};
     my $comment  = $arg{comment};
 
-    my $EditURI = $self->_set_edit_uri( $arg{eid} );
+    my $EditURI = $self->_set_edit_uri( $arg{edit_ep} );
 
     my $entry = XML::Atom::Entry->new;
 
@@ -76,7 +75,7 @@ sub edit{
 sub delete{
     my( $self , %arg ) = @_;
 
-    my $EditURI = $self->_set_edit_uri( $arg{eid} );
+    my $EditURI = $self->_set_edit_uri( $arg{edit_ep} );
 
     return $self->client->deleteEntry($EditURI )
         or croak $self->client->errstr;
@@ -89,33 +88,30 @@ sub getFeed{
         or croak $self->client->errstr;
 }
 
-sub entry2eid{
+sub entry2edit_ep{
     my( $self , $entry ) = @_;
 
-    my $edit = '';
+    my $edit_ep = '';
     for my $link ( $entry->link() ){
         if( $link->rel() eq 'service.edit'){
-            $edit = $link->href();
+            $edit_ep = $link->href();
             last;
         }
         else{
             next;
         }
     }
-
-    my $eid = substr($edit , length("$EditURI_PREFIX") );
-
-    return $eid;
+    return $edit_ep;
 }
 
 
 
 sub _set_edit_uri{
-    my( $self , $eid ) = @_;
+    my( $self , $edit_ep ) = @_;
 
-    return undef if ! $eid;
+    return undef if ! $edit_ep;
 
-    return sprintf("%s%s", $EditURI_PREFIX , $eid);
+    return sprintf("%s%s", $HatenaURI , $edit_ep);
 }
 
 sub _make_link_element{
@@ -162,32 +158,32 @@ WebService::Hatena::Bookmark::Lite - A Perl Interface for Hatena::Bookmark AtomP
 
     use WebService::Hatena::Bookmark::Lite;
 
-    my $bookmark = WebService::Hatena::Bookmark::Lite->new({
+    my $bookmark = WebService::Hatena::Bookmark::Lite->new(
         username  => $username,
         password  => $password,
-    });
+    );
 
     ### add
-    my $entry = $bookmark->add({
+    my $edit_ep = $bookmark->add(
         url     => $url,
         tag     => \@tag_list,
         comment => $comment,
-    });
+    );
 
     ### edit
     @tag = ( qw/ kaka tete /);
     $com = 'edit comment';
 
-    my $eid = $bookmark->entry2eid($entry);
-    $bookmark->edit({
-        eid      => $eid,
-        tag      => \@tag ,
-        comment  => $com  ,
+    my $edit_ep = $bookmark->entry2edit_ep($entry);
+    $bookmark->edit(
+        edit_ep => $edit_ep,
+        tag     => \@tag ,
+        comment => $com  ,
     );
 
     ### delete
     $bookmark->delete(
-        eid      => $eid ,
+        edit_ep => $edit_ep ,
     );
 
     # Get Feed
@@ -206,10 +202,10 @@ WebService::Hatena::Bookmark::Lite provides an interface to the Hatena::Bookmark
 
 =over 4
 
-  my $bookmark = WebService::Hatena::Bookmark::Lite->new({
+  my $bookmark = WebService::Hatena::Bookmark::Lite->new(
       username  => $username,
       password  => $password,
-  });
+  );
 
 Creates and returns a WebService::Hatena::Bookmark::Lite Object.
 
@@ -219,14 +215,14 @@ Creates and returns a WebService::Hatena::Bookmark::Lite Object.
 
 =over 4
 
-  my $entry = $bookmark->add({
+  my $entry = $bookmark->add(
       url     => $url,
       tag     => \@tag_list,
       comment => $comment,
-  });
+  );
 
 Add Entry of your Hatena::Bookmark.
-Return XML::Atom::Entry Object.
+Return EditURI End Point.
 
 =back
 
@@ -234,14 +230,14 @@ Return XML::Atom::Entry Object.
 
 =over 4
 
-  my $entry = $bookmark->edit({
-      eid     => $eid,
+  my $entry = $bookmark->edit(
+      edit_ep => $edit_ep,
       tag     => \@tag_list,
       comment => $comment,
-  });
+  );
 
 Edit exist entry of your Hatena::Bookmark.
-Return XML::Atom::Entry Object.
+Return true on success, false otherwise.
 
 =back
 
@@ -250,21 +246,21 @@ Return XML::Atom::Entry Object.
 =over 4
 
   $bookmark->delete(
-      eid      => $eid ,
+      edit_ep  => $edit_ep ,
   );
 
 Delete exist entry of your Hatena::Bookmark.
 
 =back
 
-=head2 entry2eid
+=head2 entry2edit_ep
 
 =over 4
 
-  my $eid = $bookmark->entry2eid( $entry );
+  my $edit_ep = $bookmark->entry2edit_ep( $entry );
 
-Return eid of correct entry.
-eid is unique number of each entry.
+Return EditURI End Point of correct entry.
+EditURI End Point is unique number of each entry.
 
 =back
 
@@ -273,7 +269,7 @@ eid is unique number of each entry.
 =over 4
 
   my $entry = $bookmark->getEntry(
-      eid  => $eid ,
+      edit_ep  => $edit_ep ,
   );
 
 Get exist entry of your Hatena::Bookmark.

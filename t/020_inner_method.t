@@ -8,7 +8,7 @@ use Test::More tests=>15;
 use WebService::Hatena::Bookmark::Lite;
 
 my $URL = 'http://www.example.com';
-my $EditURI_PREFIX = q{http://b.hatena.ne.jp/atom/edit/};
+my $HatenaURI = q{http://b.hatena.ne.jp/};
 
 my $package = 'WebService::Hatena::Bookmark::Lite';
 
@@ -30,8 +30,8 @@ my $package = 'WebService::Hatena::Bookmark::Lite';
 
 # _set_edit_uri
 {
-    is( $package->_set_edit_uri() ,  undef , 'empty eid _set_edit_uri OK');
-    is( $package->_set_edit_uri(123) ,  $EditURI_PREFIX.'123' , 'normal _set_edit_uri OK');
+    is( $package->_set_edit_uri() ,  undef , 'empty edit_ep _set_edit_uri OK');
+    is( $package->_set_edit_uri('atom/edit/123') ,  $HatenaURI.'atom/edit/123' , 'normal _set_edit_uri OK');
 }
 
 #  _make_link_element
