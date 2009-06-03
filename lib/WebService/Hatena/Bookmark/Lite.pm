@@ -109,7 +109,7 @@ sub entry2edit_ep{
 sub _set_edit_uri{
     my( $self , $edit_ep ) = @_;
 
-    return undef if ! $edit_ep;
+    return if ! $edit_ep;
 
     return sprintf("%s%s", $HatenaURI , $edit_ep);
 }
@@ -174,7 +174,6 @@ WebService::Hatena::Bookmark::Lite - A Perl Interface for Hatena::Bookmark AtomP
     @tag = ( qw/ kaka tete /);
     $com = 'edit comment';
 
-    my $edit_ep = $bookmark->entry2edit_ep($entry);
     $bookmark->edit(
         edit_ep => $edit_ep,
         tag     => \@tag ,
@@ -215,7 +214,7 @@ Creates and returns a WebService::Hatena::Bookmark::Lite Object.
 
 =over 4
 
-  my $entry = $bookmark->add(
+  my $edit_ep = $bookmark->add(
       url     => $url,
       tag     => \@tag_list,
       comment => $comment,
@@ -230,7 +229,7 @@ Return EditURI End Point.
 
 =over 4
 
-  my $entry = $bookmark->edit(
+  my $edit_ret = $bookmark->edit(
       edit_ep => $edit_ep,
       tag     => \@tag_list,
       comment => $comment,
@@ -245,7 +244,7 @@ Return true on success, false otherwise.
 
 =over 4
 
-  $bookmark->delete(
+  my $del_ret = $bookmark->delete(
       edit_ep  => $edit_ep ,
   );
 
@@ -259,6 +258,7 @@ Delete exist entry of your Hatena::Bookmark.
 
   my $edit_ep = $bookmark->entry2edit_ep( $entry );
 
+Need one parameter. what is XML::Atom::Entry Object.
 Return EditURI End Point of correct entry.
 EditURI End Point is unique number of each entry.
 
@@ -307,6 +307,8 @@ http://d.hatena.ne.jp/
 http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%C3%A5%AF%A5%DE%A1%BC%A5%AFAtomAPI
 
 =item * L<XML::Atom>
+
+=back
 
 =head1 LICENSE
 

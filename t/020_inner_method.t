@@ -30,7 +30,7 @@ my $package = 'WebService::Hatena::Bookmark::Lite';
 
 # _set_edit_uri
 {
-    is( $package->_set_edit_uri() ,  undef , 'empty edit_ep _set_edit_uri OK');
+    is( $package->_set_edit_uri() , undef  , 'empty edit_ep _set_edit_uri OK');
     is( $package->_set_edit_uri('atom/edit/123') ,  $HatenaURI.'atom/edit/123' , 'normal _set_edit_uri OK');
 }
 

@@ -2,10 +2,13 @@ use inc::Module::Install;
 name 'WebService-Hatena-Bookmark-Lite';
 all_from 'lib/WebService/Hatena/Bookmark/Lite.pm';
 
-# requires '';
+requires (
+    'XML::Atom'             => '0.35',
+    'Class::Accessor::Fast' => '0.33',
+);
 
 tests 't/*.t';
-author_tests 'xt';
+#author_tests 'xt';
 
 build_requires 'Test::More';
 use_test_base;
