@@ -91,16 +91,18 @@ sub getFeed{
 sub entry2edit_ep{
     my( $self , $entry ) = @_;
 
-    my $edit_ep = '';
+    my $edit = '';
     for my $link ( $entry->link() ){
         if( $link->rel() eq 'service.edit'){
-            $edit_ep = $link->href();
+            $edit = $link->href();
             last;
         }
         else{
             next;
         }
     }
+    my $edit_ep = substr($edit , length("$HatenaURI") );
+
     return $edit_ep;
 }
 

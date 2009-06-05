@@ -44,8 +44,8 @@ my $edit_ep2 = '';
         comment  => $com  ,
     );
 
-    like( $edit_ep1 , qr{^atom/edit/[0-9]} , 'entry1 add OK' );
-    like( $edit_ep2 , qr{^atom/edit/[0-9]} , 'entry2 add OK' );
+    like( $edit_ep1 , qr{^atom/edit/[0-9]+$} , 'entry1 add OK' );
+    like( $edit_ep2 , qr{^atom/edit/[0-9]+$} , 'entry2 add OK' );
 }
 
 ### edit
@@ -65,9 +65,6 @@ my $edit_ep2 = '';
 {
     my $entry = $bookmark->getEntry( edit_ep  => $edit_ep1 );
     isa_ok( $entry , 'XML::Atom::Entry' , 'getEntry return XML::Atom::Entry Object OK');
-
-    my $select_ep = $bookmark->entry2edit_ep( $entry );
-    is( $select_ep , $edit_ep1 , 'entry2edit_ep OK');
 }
 
 ### delete
@@ -78,8 +75,14 @@ my $edit_ep2 = '';
     is( $del_ret , 1 , 'entry2 delete OK');
 }
 
-### getFeed
+### getFeed , entry2edit_ep
 {
     my $feed = $bookmark->getFeed();
     isa_ok( $feed , 'XML::Atom::Feed' , 'getFeed return XML::Atom::Feed Object OK');
+
+    my @entries = $feed->entries;
+    my $entry = shift @entries;
+    my $edit_ep = $bookmark->entry2edit_ep( $entry );
+    like( $edit_ep , qr{^atom/edit/[0-9]+$} , 'entry2edit_ep convert OK' );
 }
+
