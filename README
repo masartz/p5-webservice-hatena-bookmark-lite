@@ -10,7 +10,10 @@ you should just be able to do
 Download it, unpack it, then build it as per the usual:
 
     % perl Makefile.PL
-    % make && make test
+    % make
+    % export WEBSERVICE_HATENA_BOOKMARK_TEST_USERNAME='your hatenaID'
+    % export WEBSERVICE_HATENA_BOOKMARK_TEST_PASSWORD='your hatenaPassWord'
+    % make test
 
 Then install it:
 

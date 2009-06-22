@@ -91,6 +91,8 @@ sub getFeed{
 sub entry2edit_ep{
     my( $self , $entry ) = @_;
 
+    return if ! $entry;
+
     my $edit_ep = '';
     for my $link ( $entry->link() ){
         if( $link->rel() eq 'service.edit'){
@@ -194,6 +196,14 @@ WebService::Hatena::Bookmark::Lite - A Perl Interface for Hatena::Bookmark AtomP
 =head1 DESCRIPTION
 
 WebService::Hatena::Bookmark::Lite provides an interface to the Hatena::Bookmark AtomAPI.
+
+If you use this module , It is necessary to prepare Hatena ID beforehand.
+
+Hatena ID & password are necessary , when you install this module too.
+please set ID & password , like following.
+  % export WEBSERVICE_HATENA_BOOKMARK_TEST_USERNAME='your hatenaID'
+  % export WEBSERVICE_HATENA_BOOKMARK_TEST_PASSWORD='your hatenaPassWord'
+
 
 =head1 METHODS
 
@@ -300,7 +310,7 @@ Masartz E<lt>masartz {at} gmail.comE<gt>
 
 =item * Hatena::Bookmark
 
-http://d.hatena.ne.jp/
+http://b.hatena.ne.jp/
 
 =item * Hatena::Bookmark API documentation
 
