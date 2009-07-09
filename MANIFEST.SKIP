@@ -13,7 +13,9 @@
 ^t/9\d_.*\.t
 ^t/perlcritic
 ^tools/
+^xt/
 \.svn/
 ^[^/]+\.yaml$
 ^[^/]+\.pl$
 ^\.shipit$
+\.git
