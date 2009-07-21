@@ -11,8 +11,7 @@ Download it, unpack it, then build it as per the usual:
 
     % perl Makefile.PL
     % make
-    % export WEBSERVICE_HATENA_BOOKMARK_TEST_USERNAME='your hatenaID'
-    % export WEBSERVICE_HATENA_BOOKMARK_TEST_PASSWORD='your hatenaPassWord'
+    % perl -MConfig::Pit -e'Config::Pit::set("http://www.hatena.ne.jp", data=>{ username => "foobar", password => "barbaz" })'
     % make test
 
 Then install it:

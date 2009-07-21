@@ -202,10 +202,9 @@ WebService::Hatena::Bookmark::Lite provides an interface to the Hatena::Bookmark
 If you use this module , It is necessary to prepare Hatena ID beforehand.
 
 Hatena ID & password are necessary , when you install this module too.
-please set ID & password , like following.
-  % export WEBSERVICE_HATENA_BOOKMARK_TEST_USERNAME='your hatenaID'
-  % export WEBSERVICE_HATENA_BOOKMARK_TEST_PASSWORD='your hatenaPassWord'
+please set ID & password using Conig::Pit , it looks like this.
 
+  % perl -MConfig::Pit -e'Config::Pit::set("http://www.hatena.ne.jp", data=>{ username => "foobar", password => "barbaz" })'
 
 =head1 METHODS
 
@@ -302,6 +301,10 @@ Return XML::Atom::Feed Object.
 
 =back
 
+=head1 REPOS
+
+    http://github.com/masartz/p5-webservice-hatena-bookmark-lite/tree/master
+
 =head1 AUTHOR
 
 Masartz E<lt>masartz {at} gmail.comE<gt>
@@ -310,11 +313,11 @@ Masartz E<lt>masartz {at} gmail.comE<gt>
 
 =over 4
 
-=item * Hatena::Bookmark
+=item * Hatena-Bookmark
 
 http://b.hatena.ne.jp/
 
-=item * Hatena::Bookmark API documentation
+=item * Hatena-Bookmark API documentation
 
 http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%C3%A5%AF%A5%DE%A1%BC%A5%AFAtomAPI
 

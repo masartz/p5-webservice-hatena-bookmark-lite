@@ -3,14 +3,21 @@ use warnings;
 use Test::More;
 use WebService::Hatena::Bookmark::Lite;
 
-my $username = $ENV{WEBSERVICE_HATENA_BOOKMARK_TEST_USERNAME};
-my $password = $ENV{WEBSERVICE_HATENA_BOOKMARK_TEST_PASSWORD};
+my $username = '';
+my $password = '';
+eval{
+    use Config::pit;
+    my $config = Config::Pit::pit_get("http://www.hatena.ne.jp");
+    $username = $config->{username};
+    $password = $config->{password};
+};
 
 if ($username && $password) {
     plan tests => 8 ;
 }
 else {
-    plan skip_all => "Set ENV:WEBSERVICE_HATENA_BOOKMARK_TEST_USERNAME/PASSWORD";
+    plan skip_all => q{ Please set config . perl -MConfig::Pit -e'Config::Pit::set("http://www.hatena.ne.jp",}.
+           q/ data=>{ username => "foobar", password => "barbaz" })' /;
 }
 
 my $url1  = 'http://www.google.co.jp';
@@ -84,5 +91,10 @@ my $edit_ep2 = '';
     my $entry = shift @entries;
     my $edit_ep = $bookmark->entry2edit_ep( $entry );
     like( $edit_ep , qr{^atom/edit/[0-9]+$} , 'entry2edit_ep convert OK' );
+}
+
+### after test 
+{
+    $bookmark->delete(edit_ep  => $edit_ep1);
 }
 
