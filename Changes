@@ -1,4 +1,6 @@
 Revision history for Perl extension WebService::Hatena::Bookmark::Lite
 
+0.02    :Sep 11 16:30:00 2009
+        - change ID&PASS setting. from ENV to Config::Pit
 0.01    :JULY 9 16:32:55 2009
         - original version
