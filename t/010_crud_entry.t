@@ -6,7 +6,7 @@ use WebService::Hatena::Bookmark::Lite;
 my $username = '';
 my $password = '';
 eval{
-    use Config::pit;
+    use Config::Pit;
     my $config = Config::Pit::pit_get("http://www.hatena.ne.jp");
     $username = $config->{username};
     $password = $config->{password};
