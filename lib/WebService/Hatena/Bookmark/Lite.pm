@@ -50,7 +50,7 @@ sub add{
 sub getEntry{
     my( $self , %arg ) = @_;
 
-    my $EditURI = $self->_set_edit_uri( $arg{edit_ep} );
+    my $EditURI = $arg{edit_ep};
 
     return $self->client->getEntry( $EditURI )
         or croak $self->client->errstr;
@@ -62,7 +62,7 @@ sub edit{
     my $tag      = $arg{tag};
     my $comment  = $arg{comment};
 
-    my $EditURI = $self->_set_edit_uri( $arg{edit_ep} );
+    my $EditURI = $arg{edit_ep};
 
     my $entry = XML::Atom::Entry->new;
 
@@ -75,7 +75,7 @@ sub edit{
 sub delete{
     my( $self , %arg ) = @_;
 
-    my $EditURI = $self->_set_edit_uri( $arg{edit_ep} );
+    my $EditURI = $arg{edit_ep};
 
     return $self->client->deleteEntry($EditURI )
         or croak $self->client->errstr;
@@ -103,19 +103,7 @@ sub entry2edit_ep{
             next;
         }
     }
-    my $edit_ep = substr($edit , length("$HatenaURI") );
-
-    return $edit_ep;
-}
-
-
-
-sub _set_edit_uri{
-    my( $self , $edit_ep ) = @_;
-
-    return if ! $edit_ep;
-
-    return sprintf("%s%s", $HatenaURI , $edit_ep);
+    return $edit;
 }
 
 sub _make_link_element{
