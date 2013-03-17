@@ -20,6 +20,7 @@ else {
            q/ data=>{ username => "foobar", password => "barbaz" })' /;
 }
 
+my $hburl = 'http://b.hatena.ne.jp';
 my $url1  = 'http://www.google.co.jp';
 my $url2  = 'http://www.yahoo.co.jp';
 my @tag   = ( qw/ hoge moge /);
@@ -51,8 +52,8 @@ my $edit_ep2 = '';
         comment  => $com  ,
     );
 
-    like( $edit_ep1 , qr{^atom/edit/[0-9]+$} , 'entry1 add OK' );
-    like( $edit_ep2 , qr{^atom/edit/[0-9]+$} , 'entry2 add OK' );
+    like( $edit_ep1 , qr{^$hburl/atom/edit/[0-9]+$} , 'entry1 add OK' );
+    like( $edit_ep2 , qr{^$hburl/atom/edit/[0-9]+$} , 'entry2 add OK' );
 }
 
 ### edit
