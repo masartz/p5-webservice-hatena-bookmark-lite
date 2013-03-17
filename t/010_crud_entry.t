@@ -13,13 +13,14 @@ eval{
 };
 
 if ($username && $password) {
-    plan tests => 8 ;
+    plan tests => 9 ;
 }
 else {
     plan skip_all => q{ Please set config . perl -MConfig::Pit -e'Config::Pit::set("http://www.hatena.ne.jp",}.
            q/ data=>{ username => "foobar", password => "barbaz" })' /;
 }
 
+my $hburl = 'http://b.hatena.ne.jp';
 my $url1  = 'http://www.google.co.jp';
 my $url2  = 'http://www.yahoo.co.jp';
 my @tag   = ( qw/ hoge moge /);
@@ -51,8 +52,8 @@ my $edit_ep2 = '';
         comment  => $com  ,
     );
 
-    like( $edit_ep1 , qr{^atom/edit/[0-9]+$} , 'entry1 add OK' );
-    like( $edit_ep2 , qr{^atom/edit/[0-9]+$} , 'entry2 add OK' );
+    like( $edit_ep1 , qr{^$hburl/atom/edit/[0-9]+$} , 'entry1 add OK' );
+    like( $edit_ep2 , qr{^$hburl/atom/edit/[0-9]+$} , 'entry2 add OK' );
 }
 
 ### edit
@@ -90,7 +91,15 @@ my $edit_ep2 = '';
     my @entries = $feed->entries;
     my $entry = shift @entries;
     my $edit_ep = $bookmark->entry2edit_ep( $entry );
-    like( $edit_ep , qr{^atom/edit/[0-9]+$} , 'entry2edit_ep convert OK' );
+    like( $edit_ep , qr{^$hburl/atom/edit/[0-9]+$} , 'entry2edit_ep convert OK' );
+
+    my $edit_ret = $bookmark->edit(
+        edit_ep  => $edit_ep1,
+        tag      => \@tag ,
+        comment  => $com  ,
+    );
+    is( $edit_ret , 1 , 'entry2edit_ep to edit OK');
+
 }
 
 ### after test 
