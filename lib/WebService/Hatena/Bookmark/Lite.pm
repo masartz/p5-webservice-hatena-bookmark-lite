@@ -11,9 +11,9 @@ use XML::Atom::Client;
 
 use base qw/ Class::Accessor::Fast /;
 
-__PACKAGE__->mk_accessors qw/
+__PACKAGE__->mk_accessors(qw/
     client
-/;
+/);
 
 my $HatenaURI      = q{http://b.hatena.ne.jp/};
 my $PostURI        = $HatenaURI.q{atom/post};
